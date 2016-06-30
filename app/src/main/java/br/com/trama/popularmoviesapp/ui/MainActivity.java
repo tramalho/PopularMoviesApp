@@ -10,6 +10,7 @@ import java.util.List;
 
 import br.com.trama.popularmoviesapp.R;
 import br.com.trama.popularmoviesapp.model.MovieModel;
+import br.com.trama.popularmoviesapp.model.MovieResponse;
 import br.com.trama.popularmoviesapp.network.MovieAsyncTask;
 import br.com.trama.popularmoviesapp.ui.adapter.MovieAdapter;
 
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
 
     private List<MovieModel> moviesList;
     private MovieAdapter movieAdapter;
+    private int page = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
     @Override
     protected void onStart() {
         super.onStart();
-        requestMovies(0);
+        requestMovies(this.page);
     }
 
     private void requestMovies(int page) {
@@ -52,8 +54,9 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
     }
 
     @Override
-    public void onResult(List<MovieModel> movieModels) {
-        this.moviesList.addAll(movieModels);
+    public void onResult(MovieResponse movieResponse) {
+        this.page = movieResponse.getPage();
+        this.moviesList.addAll(movieResponse.getMovieModels());
         this.movieAdapter.notifyDataSetChanged();
     }
 }

@@ -3,23 +3,23 @@ package br.com.trama.popularmoviesapp.network;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import br.com.trama.popularmoviesapp.model.MovieModel;
+import br.com.trama.popularmoviesapp.BuildConfig;
+import br.com.trama.popularmoviesapp.model.MovieResponse;
 import br.com.trama.popularmoviesapp.util.Const;
 import br.com.trama.popularmoviesapp.util.JsonParser;
 
 /**
  * Created by trama on 28/06/16.
  */
-public class MovieAsyncTask extends AsyncTask<Void, Void, List<MovieModel>> {
+public class MovieAsyncTask extends AsyncTask<Void, Void, MovieResponse> {
 
-    private static final String TAG = MovieAsyncTask.class.getSimpleName();
     private int page;
 
     public interface MovieAsyncTaskCallback {
-        void onResult(List<MovieModel> movieModels);
+        void onResult(MovieResponse movieModels);
     }
 
     private MovieAsyncTaskCallback callback;
@@ -31,36 +31,35 @@ public class MovieAsyncTask extends AsyncTask<Void, Void, List<MovieModel>> {
         this.page = page;
     }
 
-    public MovieAsyncTask(MovieAsyncTaskCallback callback, RequestHelper requestHelper, JsonParser jsonParser) {
+    public MovieAsyncTask(MovieAsyncTaskCallback callback, RequestHelper requestHelper,
+                          JsonParser jsonParser) {
         this.callback = callback;
         this.requestHelper = requestHelper;
         this.jsonParser = jsonParser;
     }
 
     @Override
-    protected List<MovieModel> doInBackground(Void... params) {
+    protected MovieResponse doInBackground(Void... params) {
 
-        List<MovieModel> movies = Collections.emptyList();
+        MovieResponse movieResponse = new MovieResponse();
 
-        StringBuilder builder = new StringBuilder(Const.Url.IMDB_BASE_URL);
-        builder.append(Const.Url.END_POINT_POPULAR);
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put(Const.Request.BASE_URL, Const.Url.IMDB_BASE_URL + Const.Url.END_POINT_POPULAR);
+        requestParams.put(Const.Url.QUERY_PAGE, ""+this.page);
+        requestParams.put(Const.Url.APP_KEY, BuildConfig.THE_MOVIE_DB_API_KEY);
+        requestParams.put(Const.Request.Method.TYPE, Const.Request.Method.GET);
 
-        if(this.page > 0){
-            builder.append(Const.Url.QUERY_PAGE)
-                    .append(page);
-        }
-
-        String result = requestHelper.execute(builder.toString(), Const.Request.Method.GET);
+        String result = requestHelper.execute(requestParams);
 
         if(!TextUtils.isEmpty(result)){
-            movies = jsonParser.fromStr(result);
+            movieResponse = jsonParser.fromStr(result);
         }
 
-        return movies;
+        return movieResponse;
     }
 
     @Override
-    protected void onPostExecute(List<MovieModel> movieModels) {
-        callback.onResult(movieModels);
+    protected void onPostExecute(MovieResponse movieResponse) {
+        callback.onResult(movieResponse);
     }
 }
