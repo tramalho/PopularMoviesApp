@@ -14,12 +14,18 @@ import br.com.trama.popularmoviesapp.R;
 import br.com.trama.popularmoviesapp.model.MovieModel;
 import br.com.trama.popularmoviesapp.util.Const;
 
+
 /**
  * Created by trama on 27/06/16.
  */
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> {
 
     private List<MovieModel> moviesList;
+    private MovieAdapter.OnItemClickListener onItemClickListener;
+
+    public interface OnItemClickListener{
+        void onItemClick(MovieModel movieModel);
+    }
 
     public MovieAdapter(List<MovieModel> moviesList) {
         this.moviesList = moviesList;
@@ -45,14 +51,18 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
         return this.moviesList.size();
     }
 
+    public void setOnItemClickListener(MovieAdapter.OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private ImageView imageView;
 
         public ViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.pop_imageview_id);
+            itemView.setOnClickListener(this);
         }
 
         public void bind(MovieModel movie) {
@@ -62,5 +72,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
                     .placeholder(R.drawable.projetor)
                     .into(imageView);
         }
+
+        @Override
+        public void onClick(View v) {
+            if(onItemClickListener != null) {
+                onItemClickListener.onItemClick(moviesList.get(getAdapterPosition()));
+            }
+        }
     }
+
 }

@@ -34,5 +34,6 @@ public interface Const {
 
     interface Util {
         String DELIMITER = "\\A";
+        int SPAN_COLUMNS = 2;
     }
 }

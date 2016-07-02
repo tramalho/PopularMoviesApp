@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,10 +14,10 @@ import br.com.trama.popularmoviesapp.model.MovieModel;
 import br.com.trama.popularmoviesapp.model.MovieResponse;
 import br.com.trama.popularmoviesapp.network.MovieAsyncTask;
 import br.com.trama.popularmoviesapp.ui.adapter.MovieAdapter;
+import br.com.trama.popularmoviesapp.util.Const;
 
 
-
-public class MainActivity extends AppCompatActivity implements MovieAsyncTask.MovieAsyncTaskCallback {
+public class MainActivity extends AppCompatActivity implements MovieAsyncTask.MovieAsyncTaskCallback, MovieAdapter.OnItemClickListener {
 
     private List<MovieModel> moviesList;
     private MovieAdapter movieAdapter;
@@ -33,14 +34,17 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
     private void buildList() {
         RecyclerView moviesRV = (RecyclerView) findViewById(R.id.movies_recycler_id);
 
-        GridLayoutManager staggeredGridLayoutManager =
-                new GridLayoutManager(this, 3);
-
-        moviesRV.setLayoutManager(staggeredGridLayoutManager);
+        GridLayoutManager gridLayoutManager =
+                new GridLayoutManager(this, Const.Util.SPAN_COLUMNS);
 
         this.moviesList = new ArrayList<>();
         movieAdapter = new MovieAdapter(this.moviesList);
-        moviesRV.setAdapter(movieAdapter);
+        movieAdapter.setOnItemClickListener(this);
+
+        if (moviesRV != null) {
+            moviesRV.setLayoutManager(gridLayoutManager);
+            moviesRV.setAdapter(movieAdapter);
+        }
     }
 
     @Override
@@ -58,5 +62,10 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
         this.page = movieResponse.getPage();
         this.moviesList.addAll(movieResponse.getMovieModels());
         this.movieAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onItemClick(MovieModel movieModel) {
+        Toast.makeText(this, movieModel.toString(), Toast.LENGTH_SHORT).show();
     }
 }

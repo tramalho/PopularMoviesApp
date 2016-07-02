@@ -32,4 +32,11 @@ public class MovieModel {
     public double getVoteAverage() {
         return voteAverage;
     }
+
+    @Override
+    public String toString() {
+        return "MovieModel{" +
+                "originalTitle='" + originalTitle + '\'' +
+                '}';
+    }
 }
