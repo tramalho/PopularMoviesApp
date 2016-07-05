@@ -1,10 +1,10 @@
 package br.com.trama.popularmoviesapp.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
 
     @Override
     public void onItemClick(MovieModel movieModel) {
-        Toast.makeText(this, movieModel.toString(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(Const.Param.MOVIE_MODEL, movieModel);
+        this.startActivity(intent);
     }
 }

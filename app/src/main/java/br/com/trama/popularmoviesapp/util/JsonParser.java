@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Calendar;
+
 import br.com.trama.popularmoviesapp.model.MovieModel;
 import br.com.trama.popularmoviesapp.model.MovieResponse;
 
@@ -45,7 +47,10 @@ public class JsonParser {
         String originalTitle = jsonObject.getString(Const.Json.ORIGINAL_TITLE);
         String overview      = jsonObject.getString(Const.Json.OVERVIEW);
         double voteAverage   = jsonObject.getDouble(Const.Json.VOTE_AVERAGE);
+        String releaseStr    = jsonObject.getString(Const.Json.RELEASE_DATE);
 
-        return new MovieModel(posterPath, originalTitle, overview, voteAverage);
+        Calendar calendar = new DateHelper().strToCalendar(releaseStr, Const.Patterns.YMD_DATE);
+
+        return new MovieModel(posterPath, voteAverage, overview, calendar, originalTitle);
     }
 }

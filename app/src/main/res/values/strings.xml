@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Popular Movies App</string>
+    <string name="mock_120min">120min</string>
+    <string name="average_with_param">%1$s/10</string>
+    <string name="mark_as_favorite">mark as favorite</string>
 </resources>

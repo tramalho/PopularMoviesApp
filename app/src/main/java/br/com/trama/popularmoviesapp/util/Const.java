@@ -15,11 +15,11 @@ public interface Const {
 
     interface Request {
 
-        String BASE_URL = "base_url";
+        String BASE_URL = "BASE_URL";
 
         interface Method {
             String GET = "GET";
-            String TYPE = "type";
+            String TYPE = "TYPE";
         }
     }
 
@@ -30,10 +30,20 @@ public interface Const {
         String ORIGINAL_TITLE = "original_title";
         String OVERVIEW = "overview";
         String VOTE_AVERAGE = "vote_average";
+        String RELEASE_DATE = "release_date";
     }
 
     interface Util {
         String DELIMITER = "\\A";
         int SPAN_COLUMNS = 2;
+    }
+
+    interface Param {
+        String MOVIE_MODEL = "MOVIE_MODEL";
+    }
+
+    interface Patterns {
+        String YMD_DATE = "yyyy-MM-dd";
+        String YYYY = "yyyy";
     }
 }
