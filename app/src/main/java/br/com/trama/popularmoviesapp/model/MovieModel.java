@@ -11,19 +11,21 @@ import java.util.Calendar;
 public class MovieModel implements Parcelable {
 
     private String posterPath;
+    private String backdropPath;
     private String originalTitle;
     private String overview;
     private double voteAverage;
     private Calendar release;
 
     public MovieModel(String posterPath, double voteAverage,  String overview, Calendar release,
-                      String originalTitle) {
+                      String originalTitle, String backdropPath) {
 
         this.posterPath = posterPath;
         this.originalTitle = originalTitle;
         this.overview = overview;
         this.voteAverage = voteAverage;
         this.release = release;
+        this.backdropPath = backdropPath;
     }
 
     public String getPosterPath() {
@@ -46,6 +48,10 @@ public class MovieModel implements Parcelable {
         return release;
     }
 
+    public String getBackdropPath() {
+        return backdropPath;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -54,24 +60,23 @@ public class MovieModel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.posterPath);
+        dest.writeString(this.backdropPath);
         dest.writeString(this.originalTitle);
         dest.writeString(this.overview);
         dest.writeDouble(this.voteAverage);
         dest.writeSerializable(this.release);
     }
 
-    public MovieModel() {
-    }
-
     protected MovieModel(Parcel in) {
         this.posterPath = in.readString();
+        this.backdropPath = in.readString();
         this.originalTitle = in.readString();
         this.overview = in.readString();
         this.voteAverage = in.readDouble();
         this.release = (Calendar) in.readSerializable();
     }
 
-    public static final Creator<MovieModel> CREATOR = new Creator<MovieModel>() {
+    public static final Parcelable.Creator<MovieModel> CREATOR = new Parcelable.Creator<MovieModel>() {
         @Override
         public MovieModel createFromParcel(Parcel source) {
             return new MovieModel(source);

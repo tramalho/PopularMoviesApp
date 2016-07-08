@@ -31,6 +31,8 @@ public interface Const {
         String OVERVIEW = "overview";
         String VOTE_AVERAGE = "vote_average";
         String RELEASE_DATE = "release_date";
+        String BACKDROP_PATH = "backdrop_path";
+        String TOTAL_PAGES = "total_pages";
     }
 
     interface Util {

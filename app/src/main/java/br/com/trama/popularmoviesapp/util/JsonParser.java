@@ -23,8 +23,11 @@ public class JsonParser {
 
         try {
             JSONObject jsonObject = new JSONObject(result);
-            int page = jsonObject.getInt(Const.Json.PAGE);
+            int page       = jsonObject.getInt(Const.Json.PAGE);
+            int totalPages = jsonObject.getInt(Const.Json.TOTAL_PAGES);
+
             movieResponse.setPage(page);
+            movieResponse.setTotalPages(totalPages);
 
             JSONArray jsonArray = jsonObject.getJSONArray(Const.Json.RESULTS);
             int length = jsonArray.length();
@@ -48,9 +51,10 @@ public class JsonParser {
         String overview      = jsonObject.getString(Const.Json.OVERVIEW);
         double voteAverage   = jsonObject.getDouble(Const.Json.VOTE_AVERAGE);
         String releaseStr    = jsonObject.getString(Const.Json.RELEASE_DATE);
+        String backdropPath  = jsonObject.getString(Const.Json.BACKDROP_PATH);
 
         Calendar calendar = new DateHelper().strToCalendar(releaseStr, Const.Patterns.YMD_DATE);
 
-        return new MovieModel(posterPath, voteAverage, overview, calendar, originalTitle);
+        return new MovieModel(posterPath, voteAverage, overview, calendar, originalTitle, backdropPath);
     }
 }

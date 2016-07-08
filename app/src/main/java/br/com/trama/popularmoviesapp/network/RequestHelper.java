@@ -33,13 +33,15 @@ public class RequestHelper {
 
             URL url = createURI(params);
 
+            Log.d(TAG, url.toString());
+
             HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod(method);
             urlConnection.connect();
 
             result = convertStream(urlConnection.getInputStream());
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             Log.e(TAG, e.getMessage(), e);
         }
 
@@ -59,8 +61,6 @@ public class RequestHelper {
         }
 
         Uri uri = builder.build();
-
-        Log.d(TAG, uri.toString());
 
         return new URL(uri.toString());
     }

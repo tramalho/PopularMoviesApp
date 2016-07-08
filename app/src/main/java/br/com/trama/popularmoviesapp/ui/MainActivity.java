@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
     private List<MovieModel> moviesList;
     private MovieAdapter movieAdapter;
     private int page = 1;
+    private int totalPages = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,16 +51,22 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
     @Override
     protected void onStart() {
         super.onStart();
+        this.moviesList.clear();
+        if(this.page == 0){this.page++;}
+        if(this.totalPages == 0){this.totalPages++;}
         requestMovies(this.page);
     }
 
     private void requestMovies(int page) {
-        new MovieAsyncTask(this, page).execute();
+        if(page <= this.totalPages) {
+            new MovieAsyncTask(this, page).execute();
+        }
     }
 
     @Override
     public void onResult(MovieResponse movieResponse) {
         this.page = movieResponse.getPage();
+        this.totalPages = movieResponse.getTotalPages();
         this.moviesList.addAll(movieResponse.getMovieModels());
         this.movieAdapter.notifyDataSetChanged();
     }

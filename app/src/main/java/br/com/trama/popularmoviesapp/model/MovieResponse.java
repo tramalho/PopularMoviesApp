@@ -9,6 +9,7 @@ import java.util.List;
 public class MovieResponse {
     private List<MovieModel> movieModels;
     private int page;
+    private int totalPages;
 
     public MovieResponse() {
         this.movieModels = new ArrayList<>();
@@ -28,5 +29,13 @@ public class MovieResponse {
 
     public List<MovieModel> getMovieModels() {
         return movieModels;
+    }
+
+    public void setTotalPages(int totalPages) {
+        this.totalPages = totalPages;
+    }
+
+    public int getTotalPages() {
+        return totalPages;
     }
 }
