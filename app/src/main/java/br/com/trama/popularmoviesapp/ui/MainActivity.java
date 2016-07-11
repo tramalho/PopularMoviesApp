@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
 
     private void buildList() {
         RecyclerView moviesRV = (RecyclerView) findViewById(R.id.movies_recycler_id);
+        moviesRV.setHasFixedSize(true);
 
         GridLayoutManager gridLayoutManager =
                 new GridLayoutManager(this, Const.Util.SPAN_COLUMNS);
