@@ -8,6 +8,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,9 +30,12 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
     private int page = 0;
     private int totalPages = 1;
     private boolean loading = true;
+    private ProgressBar progressBar;
+    private RecyclerView moviesRV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -38,7 +43,10 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
     }
 
     private void buildList() {
-        RecyclerView moviesRV = (RecyclerView) findViewById(R.id.movies_recycler_id);
+
+        progressBar = (ProgressBar) findViewById(R.id.movies_progress_id);
+
+        moviesRV = (RecyclerView) findViewById(R.id.movies_recycler_id);
 
         final GridLayoutManager gridLayoutManager =
                 new NpaGridLayoutManager(this, Const.Util.SPAN_COLUMNS);
@@ -76,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
         this.moviesList.addAll(movieResponse.getMovieModels());
         this.movieAdapter.notifyDataSetChanged();
         this.loading = false;
+        moviesRV.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override
