@@ -1,10 +1,13 @@
 package br.com.trama.popularmoviesapp.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +22,12 @@ import br.com.trama.popularmoviesapp.util.Const;
 
 public class MainActivity extends AppCompatActivity implements MovieAsyncTask.MovieAsyncTaskCallback, MovieAdapter.OnItemClickListener {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
     private List<MovieModel> moviesList;
     private MovieAdapter movieAdapter;
-    private int page = 1;
+    private int page = 0;
     private int totalPages = 1;
+    private boolean loading = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +39,9 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
 
     private void buildList() {
         RecyclerView moviesRV = (RecyclerView) findViewById(R.id.movies_recycler_id);
-        moviesRV.setHasFixedSize(true);
 
-        GridLayoutManager gridLayoutManager =
-                new GridLayoutManager(this, Const.Util.SPAN_COLUMNS);
+        final GridLayoutManager gridLayoutManager =
+                new NpaGridLayoutManager(this, Const.Util.SPAN_COLUMNS);
 
         this.moviesList = new ArrayList<>();
         movieAdapter = new MovieAdapter(this.moviesList);
@@ -46,19 +50,20 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
         if (moviesRV != null) {
             moviesRV.setLayoutManager(gridLayoutManager);
             moviesRV.setAdapter(movieAdapter);
+            moviesRV.setHasFixedSize(true);
+            moviesRV.addOnScrollListener(new MyOnScrollListener(gridLayoutManager));
         }
+        requestMovies();
     }
 
     @Override
     protected void onStart() {
+        Log.d(TAG, "onStart");
         super.onStart();
-        this.moviesList.clear();
-        if(this.page == 0){this.page++;}
-        if(this.totalPages == 0){this.totalPages++;}
-        requestMovies(this.page);
     }
 
-    private void requestMovies(int page) {
+    private void requestMovies() {
+        ++page;
         if(page <= this.totalPages) {
             new MovieAsyncTask(this, page).execute();
         }
@@ -70,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
         this.totalPages = movieResponse.getTotalPages();
         this.moviesList.addAll(movieResponse.getMovieModels());
         this.movieAdapter.notifyDataSetChanged();
+        this.loading = false;
     }
 
     @Override
@@ -77,5 +83,66 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(Const.Param.MOVIE_MODEL, movieModel);
         this.startActivity(intent);
+    }
+
+    private class MyOnScrollListener extends RecyclerView.OnScrollListener {
+
+        private final GridLayoutManager gridLayoutManager;
+        private int previousTotal;
+        private int visibleThreshold;
+        int firstVisibleItem, visibleItemCount, totalItemCount;
+
+        public MyOnScrollListener(GridLayoutManager gridLayoutManager) {
+            this.gridLayoutManager = gridLayoutManager;
+            previousTotal = 0;
+            visibleThreshold = 10;
+        }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+
+            visibleItemCount = recyclerView.getChildCount();
+            totalItemCount = gridLayoutManager.getItemCount();
+            firstVisibleItem = gridLayoutManager.findFirstVisibleItemPosition();
+
+            if (loading) {
+                if (totalItemCount > previousTotal) {
+                    loading = false;
+                    previousTotal = totalItemCount;
+                }
+            }
+            if (!loading && (totalItemCount - visibleItemCount)
+                    <= (firstVisibleItem + visibleThreshold)) {
+                requestMovies();
+            }
+        }
+    }
+
+    /**
+     * No Predictive Animations GridLayoutManager
+     */
+    private static class NpaGridLayoutManager extends GridLayoutManager {
+        /**
+         * Disable predictive animations. There is a bug in RecyclerView which causes views that
+         * are being reloaded to pull invalid ViewHolders from the internal recycler stack if the
+         * adapter size has decreased since the ViewHolder was recycled.
+         */
+        @Override
+        public boolean supportsPredictiveItemAnimations() {
+            return false;
+        }
+
+        public NpaGridLayoutManager(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+            super(context, attrs, defStyleAttr, defStyleRes);
+        }
+
+        public NpaGridLayoutManager(Context context, int spanCount) {
+            super(context, spanCount);
+        }
+
+        public NpaGridLayoutManager(Context context, int spanCount, int orientation, boolean reverseLayout) {
+            super(context, spanCount, orientation, reverseLayout);
+        }
     }
 }

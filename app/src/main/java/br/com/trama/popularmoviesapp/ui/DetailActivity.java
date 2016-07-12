@@ -58,8 +58,11 @@ public class DetailActivity extends AppCompatActivity {
 
         collapsingToolbarLayout.setTitle(this.movieModel.getOriginalTitle());
 
-        String yearRelease = new DateHelper()
-                .calendarToStr(movieModel.getRelease(), Const.Patterns.YYYY);
+        String yearRelease = "";
+        if(movieModel.getRelease() != null) {
+            yearRelease = new DateHelper()
+                    .calendarToStr(movieModel.getRelease(), Const.Patterns.YYYY);
+        }
 
         releaseDate.setText(yearRelease);
         int roundedVoteAverage = new BigDecimal("" + movieModel.getVoteAverage()).intValue();

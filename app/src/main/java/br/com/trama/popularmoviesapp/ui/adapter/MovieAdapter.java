@@ -67,6 +67,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder> 
 
         public void bind(MovieModel movie) {
 
+            Glide.clear(imageView);
             Glide.with(imageView.getContext())
                     .load(String.format(Const.Url.IMDB_BASE_IMAGE_URL, movie.getPosterPath()))
                     .placeholder(R.drawable.projetor)

@@ -1,5 +1,6 @@
 package br.com.trama.popularmoviesapp.util;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -53,7 +54,11 @@ public class JsonParser {
         String releaseStr    = jsonObject.getString(Const.Json.RELEASE_DATE);
         String backdropPath  = jsonObject.getString(Const.Json.BACKDROP_PATH);
 
-        Calendar calendar = new DateHelper().strToCalendar(releaseStr, Const.Patterns.YMD_DATE);
+        Calendar calendar = null;
+
+        if(!TextUtils.isEmpty(releaseStr)){
+            calendar = new DateHelper().strToCalendar(releaseStr, Const.Patterns.YMD_DATE);
+        }
 
         return new MovieModel(posterPath, voteAverage, overview, calendar, originalTitle, backdropPath);
     }
