@@ -3,5 +3,13 @@
     <string name="mock_120min">120min</string>
     <string name="average_with_param">%1$s/10</string>
     <string name="mark_as_favorite">mark as favorite</string>
+    <string name="most_popular">most popular</string>
+    <string name="top_rated">top rated</string>
     <string name="sort">sort</string>
+
+    <string-array name="sort_array">
+        <item>@string/most_popular</item>
+        <item>@string/top_rated</item>
+    </string-array>
+
 </resources>

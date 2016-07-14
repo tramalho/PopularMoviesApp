@@ -9,6 +9,7 @@ public interface Const {
         String IMDB_BASE_IMAGE_URL = "http://image.tmdb.org/t/p/w185/%1s";
         String IMDB_BASE_URL = "https://api.themoviedb.org/3/movie/";
         String END_POINT_POPULAR = "popular";
+        String END_POINT_TOP_RATED = "top_rated";
         String QUERY_PAGE = "page";
         String APP_KEY = "api_key";
     }

@@ -20,22 +20,26 @@ public class MovieAsyncTask extends AsyncTask<Void, Void, MovieResponse> {
 
     public interface MovieAsyncTaskCallback {
         void onResult(MovieResponse movieModels);
+
+        boolean isPopularSort(String sort);
     }
 
     private MovieAsyncTaskCallback callback;
     private RequestHelper requestHelper;
     private JsonParser jsonParser;
+    private String sort;
 
-    public MovieAsyncTask(MovieAsyncTaskCallback callback, int page) {
-        this(callback, new RequestHelper(), new JsonParser());
+    public MovieAsyncTask(MovieAsyncTaskCallback callback, int page, String sort) {
+        this(callback, new RequestHelper(), new JsonParser(), sort);
         this.page = page;
     }
 
     public MovieAsyncTask(MovieAsyncTaskCallback callback, RequestHelper requestHelper,
-                          JsonParser jsonParser) {
+                          JsonParser jsonParser, String sort) {
         this.callback = callback;
         this.requestHelper = requestHelper;
         this.jsonParser = jsonParser;
+        this.sort = sort;
     }
 
     @Override
@@ -43,8 +47,11 @@ public class MovieAsyncTask extends AsyncTask<Void, Void, MovieResponse> {
 
         MovieResponse movieResponse = new MovieResponse();
 
+        String endPoint = this.callback.isPopularSort(this.sort)
+                ? Const.Url.END_POINT_POPULAR : Const.Url.END_POINT_TOP_RATED;
+
         Map<String, String> requestParams = new HashMap<>();
-        requestParams.put(Const.Request.BASE_URL, Const.Url.IMDB_BASE_URL + Const.Url.END_POINT_POPULAR);
+        requestParams.put(Const.Request.BASE_URL, Const.Url.IMDB_BASE_URL + endPoint);
         requestParams.put(Const.Url.QUERY_PAGE, ""+this.page);
         requestParams.put(Const.Url.APP_KEY, BuildConfig.THE_MOVIE_DB_API_KEY);
         requestParams.put(Const.Request.Method.TYPE, Const.Request.Method.GET);

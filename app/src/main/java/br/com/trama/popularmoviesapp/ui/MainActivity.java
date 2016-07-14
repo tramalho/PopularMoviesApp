@@ -3,13 +3,19 @@ package br.com.trama.popularmoviesapp.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
     private boolean loading = true;
     private ProgressBar progressBar;
     private RecyclerView moviesRV;
+    private Spinner spinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +68,24 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
             moviesRV.setHasFixedSize(true);
             moviesRV.addOnScrollListener(new MyOnScrollListener(gridLayoutManager));
         }
-        requestMovies();
+
+        requestMovies(getString(R.string.most_popular));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getSupportActionBar().getThemedContext(),
+                R.array.sort_array, R.layout.support_simple_spinner_dropdown_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        getMenuInflater().inflate(R.menu.menu, menu);
+        MenuItem item = menu.findItem(R.id.spinner);
+        spinner = (Spinner) MenuItemCompat.getActionView(item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new MyOnItemSelectedListener());
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -70,10 +94,10 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
         super.onStart();
     }
 
-    private void requestMovies() {
+    private void requestMovies(String sort) {
         ++page;
         if(page <= this.totalPages) {
-            new MovieAsyncTask(this, page).execute();
+            new MovieAsyncTask(this, page, sort).execute();
         }
     }
 
@@ -84,8 +108,24 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
         this.moviesList.addAll(movieResponse.getMovieModels());
         this.movieAdapter.notifyDataSetChanged();
         this.loading = false;
-        moviesRV.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
+        configResetView(false);
+    }
+
+    @Override
+    public boolean isPopularSort(String sort) {
+        return getString(R.string.most_popular).equals(sort);
+    }
+
+    private void configResetView(boolean isReset) {
+        moviesRV.setVisibility(isReset ? View.GONE : View.VISIBLE);
+        progressBar.setVisibility(isReset ? View.VISIBLE : View.GONE);
+
+        if(isReset){
+            this.page = 0;
+            this.totalPages = 1;
+            moviesList.clear();
+            movieAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -93,6 +133,19 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
         Intent intent = new Intent(this, DetailActivity.class);
         intent.putExtra(Const.Param.MOVIE_MODEL, movieModel);
         this.startActivity(intent);
+    }
+
+    private class MyOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            configResetView(true);
+            requestMovies(parent.getSelectedItem().toString());
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+
+        }
     }
 
     private class MyOnScrollListener extends RecyclerView.OnScrollListener {
@@ -124,7 +177,8 @@ public class MainActivity extends AppCompatActivity implements MovieAsyncTask.Mo
             }
             if (!loading && (totalItemCount - visibleItemCount)
                     <= (firstVisibleItem + visibleThreshold)) {
-                requestMovies();
+                requestMovies(spinner.getSelectedItem().toString());
+                loading = true;
             }
         }
     }
